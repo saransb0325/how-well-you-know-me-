@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How well do you know me?</title>
+<link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FFD400;--ink:#2B1B5A;--card:#fff;--pink:#FF3D81;--soft:#FFF3B0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d1240;--ink:#FFF3B0;--card:#2B1B5A;--soft:#3a2878}}
+:root[data-theme="dark"]{--bg:#1d1240;--ink:#FFF3B0;--card:#2B1B5A;--soft:#3a2878}
+*{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;display:flex;justify-content:center;padding:20px}
+main{width:100%;max-width:460px}
+h1,.big{font-family:'Bowlby One',Impact,sans-serif;font-weight:400;line-height:1.05;margin:0 0 12px}
+h1{font-size:2.3rem}
+.card{background:var(--card);border:3px solid var(--ink);border-radius:18px;padding:22px;box-shadow:6px 6px 0 var(--pink)}
+p{margin:0 0 16px;font-size:1.05rem;line-height:1.45}
+input{width:100%;padding:14px;font:inherit;font-size:1.05rem;border:3px solid var(--ink);border-radius:12px;background:var(--soft);color:var(--ink);margin-bottom:14px}
+button{font:inherit;font-weight:700;font-size:1.05rem;cursor:pointer;border:3px solid var(--ink);border-radius:12px;padding:14px;width:100%;background:var(--pink);color:#fff}
+button:focus-visible,input:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.opt{background:var(--soft);color:var(--ink);text-align:left;margin-bottom:10px}
+.opt:active{background:var(--pink);color:#fff}
+.bar{height:18px;border:3px solid var(--ink);border-radius:10px;overflow:hidden;margin:18px 0}
+.bar i{display:block;height:100%;width:0;background:var(--pink);transition:width 3.2s ease-out}
+.q{font-weight:700;font-size:1.2rem;margin-bottom:16px}
+.count{font-size:.9rem;margin-bottom:8px}
+.result .big{font-size:3rem;color:var(--pink);animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(.2) rotate(-12deg);opacity:0}}
+.hide{display:none}
+@media (prefers-reduced-motion:reduce){.result .big{animation:none}.bar i{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <section id="start" class="card">
+    <h1>How well do you know me?</h1>
+    <p>6 questions. No cheating. Let's see if you're really my friend.</p>
+    <input id="name" placeholder="Your name" autocomplete="off">
+    <button id="go">Start quiz</button>
+  </section>
+
+  <section id="quiz" class="card hide">
+    <div class="count" id="count"></div>
+    <div class="q" id="q"></div>
+    <div id="opts"></div>
+  </section>
+
+  <section id="calc" class="card hide">
+    <h1>Checking your answers...</h1>
+    <div class="bar"><i id="fill"></i></div>
+    <p id="msg">Comparing with my brain...</p>
+  </section>
+
+  <section id="done" class="card result hide">
+    <p id="who"></p>
+    <div class="big">PODA MENTAL 🤪</div>
+    <p>Score: <b>0 / 6</b>. You don't know me at all.</p>
+    <button id="again">Try again</button>
+  </section>
+</main>
+<script>
+var Q=[
+["What is my favourite food?",["Biryani","Dosa","Pizza","Whatever is free"]],
+["What is my biggest fear?",["Cockroach","Exams","Mom's phone call","Low battery"]],
+["What time do I really wake up?",["6 AM","8 AM","11 AM","What is morning?"]],
+["Who is my best friend?",["You, obviously","Also you","Still you","Nobody, I'm lonely"]],
+["What is my dream job?",["Doctor","Engineer","YouTuber","Sleeping professionally"]],
+["What is my secret talent?",["Singing","Dancing","Cooking","Eating other people's food"]]
+];
+var i=0,name="";
+function $(id){return document.getElementById(id)}
+function show(id){["start","quiz","calc","done"].forEach(function(s){$(s).classList.toggle("hide",s!==id)})}
+function ask(){
+  $("count").textContent="Question "+(i+1)+" of "+Q.length;
+  $("q").textContent=Q[i][0];
+  $("opts").innerHTML="";
+  Q[i][1].forEach(function(t){
+    var b=document.createElement("button");
+    b.className="opt";b.textContent=t;
+    b.onclick=function(){i++;i<Q.length?ask():finish()};
+    $("opts").appendChild(b);
+  });
+}
+function finish(){
+  show("calc");
+  var msgs=["Comparing with my brain...","Asking my family...","Something is not matching...","Oh no..."];
+  var k=0;$("msg").textContent=msgs[0];
+  var t=setInterval(function(){k++;if(k<msgs.length)$("msg").textContent=msgs[k]},800);
+  $("fill").style.width="0";
+  setTimeout(function(){$("fill").style.width="100%"},50);
+  setTimeout(function(){
+    clearInterval(t);
+    $("who").textContent=(name||"Friend")+", the result is ready:";
+    show("done");
+  },3400);
+}
+$("go").onclick=function(){name=$("name").value.trim();i=0;show("quiz");ask()};
+$("again").onclick=function(){i=0;show("quiz");ask()};
+</script>
+</body>
+</html>
